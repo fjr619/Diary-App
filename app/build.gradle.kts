@@ -119,7 +119,7 @@ dependencies {
     implementation ("com.github.stevdza-san:MessageBarCompose:1.0.5")
 
             // One-Tap Compose
-    implementation ("com.github.stevdza-san:OneTapCompose:1.0.3")
+    implementation ("com.github.stevdza-san:OneTapCompose:1.0.7")
 
 
             // Desugar JDK
