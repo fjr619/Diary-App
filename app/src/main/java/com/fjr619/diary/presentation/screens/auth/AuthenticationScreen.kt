@@ -17,15 +17,19 @@ fun Authenticationscreen(
     loadingState: Boolean,
     onTapState: OneTapSignInState,
     messageBarState: MessageBarState,
-    onButtonClicked: () -> Unit
+    onButtonClicked: () -> Unit,
+    onTokenIdReceived: (String) -> Unit,
+    onDialogDismiss: (String) -> Unit
 ) {
     Scaffold {
-        ContentWithMessageBar(messageBarState = messageBarState) {
+        ContentWithMessageBar(
+            messageBarState = messageBarState,
+            errorMaxLines = 5
+        ) {
             AuthenticationContent(
-                loadingState
-            ){
-                onButtonClicked.invoke()
-            }
+                loadingState = loadingState,
+                onButtonClicked = onButtonClicked
+            )
         }
     }
 
@@ -33,11 +37,9 @@ fun Authenticationscreen(
         state = onTapState,
         clientId = Constants.CLIENT_ID,
         onTokenIdReceived = { tokenId ->
-            Log.e("TAG", "tokenId $tokenId")
-            messageBarState.addSuccess("Successfully authentication")
+            onTokenIdReceived(tokenId)
         },
         onDialogDismissed = {message ->
-            Log.e("TAG", "message $message")
-            messageBarState.addError(Exception(message))
+            onDialogDismiss(message)
         })
 }

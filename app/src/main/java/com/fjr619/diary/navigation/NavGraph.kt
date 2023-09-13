@@ -1,14 +1,15 @@
 package com.fjr619.diary.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavDestination
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.util.Constants
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -21,7 +22,8 @@ fun SetupNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = startDestination ) {
+        startDestination = startDestination
+    ) {
         authenticationRoute()
         homeRoute()
         writeRoute()
@@ -30,17 +32,37 @@ fun SetupNavGraph(
 
 fun NavGraphBuilder.authenticationRoute() {
     composable(route = Screen.Authentication.route) {
+        val viewModel: AuthenticationViewModel = viewModel()
+        val loadingState by viewModel.loadingState
+
         val onTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
-
         Authenticationscreen(
-            loadingState = onTapState.opened,
+            loadingState = loadingState,
             onTapState = onTapState,
-            messageBarState = messageBarState
-        ) {
-            Log.e("TAG", "clicked")
-            onTapState.open()
-        }
+            messageBarState = messageBarState,
+            onButtonClicked = {
+                onTapState.open()
+                viewModel.setLoading(true)
+            },
+            onTokenIdReceived = {
+                viewModel.signInWithMongoAtlas(it,
+                    onSuccess = {
+                        if (it) {
+                            messageBarState.addSuccess("Successfully Authenticated!")
+                        }
+                        viewModel.setLoading(false)
+                    },
+                    onError = {
+                        messageBarState.addError(Exception(it))
+                        viewModel.setLoading(false)
+                    })
+            },
+            onDialogDismiss = {
+                messageBarState.addError(Exception(it))
+                viewModel.setLoading(false)
+            }
+        )
     }
 }
 
