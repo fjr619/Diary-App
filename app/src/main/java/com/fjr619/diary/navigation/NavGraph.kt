@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
+import com.fjr619.diary.presentation.screens.home.HomeScreen
 import com.fjr619.diary.util.Constants
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
@@ -40,7 +41,8 @@ fun SetupNavGraph(
             navController.popBackStack()
             navController.navigate(Screen.Home.route)
         })
-        homeRoute(mongoApp)
+        homeRoute(
+            navigateToWrite = { navController.navigate(Screen.Write.route) })
         writeRoute()
     }
 }
@@ -84,23 +86,14 @@ fun NavGraphBuilder.authenticationRoute(
     }
 }
 
-fun NavGraphBuilder.homeRoute(mongoApp: App) {
+fun NavGraphBuilder.homeRoute(
+    navigateToWrite: () -> Unit
+) {
     composable(route = Screen.Home.route) {
-        val scope = rememberCoroutineScope()
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = {
-                scope.launch {
-                    withContext(Dispatchers.IO) {
-                        mongoApp.currentUser?.logOut()
-                    }
-                }
-            }) {
-            }
-        }
+        HomeScreen(
+            onMenuClicked = {},
+            navigateToWrite = navigateToWrite
+        )
     }
 }
 
