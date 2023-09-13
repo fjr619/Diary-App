@@ -1,5 +1,6 @@
 package com.fjr619.diary.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraphBuilder
@@ -10,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.util.Constants
+import com.stevdzasan.messagebar.rememberMessageBarState
+import com.stevdzasan.onetap.rememberOneTapSignInState
 
 @Composable
 fun SetupNavGraph(
@@ -27,8 +30,16 @@ fun SetupNavGraph(
 
 fun NavGraphBuilder.authenticationRoute() {
     composable(route = Screen.Authentication.route) {
-        Authenticationscreen(loadingState = false) {
-            
+        val onTapState = rememberOneTapSignInState()
+        val messageBarState = rememberMessageBarState()
+
+        Authenticationscreen(
+            loadingState = onTapState.opened,
+            onTapState = onTapState,
+            messageBarState = messageBarState
+        ) {
+            Log.e("TAG", "clicked")
+            onTapState.open()
         }
     }
 }

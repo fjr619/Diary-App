@@ -1,5 +1,6 @@
 package com.fjr619.diary.presentation.screens.auth
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,8 +67,10 @@ fun AuthenticationContent(
             ) {
                 GoogleButton(
                     loadingState = loadingState,
-                    onClick = onButtonClicked
-                )
+                ) {
+                    Log.e("TAG","click content")
+                    onButtonClicked.invoke()
+                }
             }
         }
     }
