@@ -15,7 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
-    onMenuClicked: () -> Unit
+    onMenuClicked: () -> Unit,
+    onDateSelected: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -34,7 +35,7 @@ fun HomeTopBar(
             }
         },
         actions = {
-            IconButton(onClick = { onMenuClicked() }) {
+            IconButton(onClick = { onDateSelected() }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = "Date Icon",
@@ -43,12 +44,4 @@ fun HomeTopBar(
             }
         },
     )
-}
-
-@Composable
-@Preview
-fun HomeTopBarPreview() {
-    HomeTopBar {
-
-    }
 }
