@@ -60,7 +60,7 @@ fun GoogleButton(
 
     Surface(
         modifier = modifier
-            .clickable(enabled = !loadingState) { onClick() },
+            .clickable(enabled = (!loadingState)) { onClick() },
         shape = shape,
         border = BorderStroke(width = borderStrokeWidth, color = borderColor),
         color = backgroundColor

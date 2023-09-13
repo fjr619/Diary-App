@@ -1,7 +1,14 @@
 package com.fjr619.diary.navigation
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -14,30 +21,42 @@ import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.util.Constants
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
+import io.realm.kotlin.mongodb.App
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SetupNavGraph(
     startDestination: String,
-    navController: NavHostController
+    navController: NavHostController,
+    mongoApp: App
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        authenticationRoute()
-        homeRoute()
+        authenticationRoute(navigateToHome = {
+            navController.popBackStack()
+            navController.navigate(Screen.Home.route)
+        })
+        homeRoute(mongoApp)
         writeRoute()
     }
 }
 
-fun NavGraphBuilder.authenticationRoute() {
+fun NavGraphBuilder.authenticationRoute(
+    navigateToHome: () -> Unit
+) {
     composable(route = Screen.Authentication.route) {
         val viewModel: AuthenticationViewModel = viewModel()
         val loadingState by viewModel.loadingState
+        val authenticated by viewModel.authenticated
 
         val onTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
         Authenticationscreen(
+            authenticated = authenticated,
             loadingState = loadingState,
             onTapState = onTapState,
             messageBarState = messageBarState,
@@ -61,14 +80,29 @@ fun NavGraphBuilder.authenticationRoute() {
             onDialogDismiss = {
                 messageBarState.addError(Exception(it))
                 viewModel.setLoading(false)
-            }
+            },
+            navigateToHome = navigateToHome
         )
     }
 }
 
-fun NavGraphBuilder.homeRoute() {
+fun NavGraphBuilder.homeRoute(mongoApp: App) {
     composable(route = Screen.Home.route) {
-
+        val scope = rememberCoroutineScope()
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(onClick = {
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        mongoApp.currentUser?.logOut()
+                    }
+                }
+            }) {
+            }
+        }
     }
 }
 

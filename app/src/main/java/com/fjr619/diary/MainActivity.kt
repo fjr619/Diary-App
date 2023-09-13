@@ -20,8 +20,17 @@ import androidx.navigation.compose.rememberNavController
 import com.fjr619.diary.navigation.Screen
 import com.fjr619.diary.navigation.SetupNavGraph
 import com.fjr619.diary.ui.theme.DiaryTheme
+import com.fjr619.diary.util.Constants
+import dagger.hilt.android.AndroidEntryPoint
+import io.realm.kotlin.mongodb.App
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var mongoApp: App
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -29,9 +38,18 @@ class MainActivity : ComponentActivity() {
             DiaryTheme {
                 val navController = rememberNavController()
                 SetupNavGraph(
-                    startDestination = Screen.Authentication.route,
-                    navController = navController)
+                    startDestination = getStartDestination(),
+                    navController = navController,
+                    mongoApp = mongoApp
+                )
             }
         }
     }
+
+    private fun getStartDestination(): String {
+        val user = mongoApp.currentUser
+        return if (user != null && user.loggedIn) Screen.Home.route
+        else Screen.Authentication.route
+    }
 }
+

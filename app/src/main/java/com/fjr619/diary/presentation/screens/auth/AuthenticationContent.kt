@@ -26,7 +26,7 @@ import com.fjr619.diary.presentation.components.GoogleButton
 
 @Composable
 fun AuthenticationContent(
-    loadingState: Boolean,
+    loadingState: Boolean = false,
     onButtonClicked: () -> Unit
 ) {
     Column(
@@ -79,7 +79,7 @@ fun AuthenticationContent(
 @Composable
 @Preview(showBackground = true)
 fun AuthenticationContentPreview() {
-    AuthenticationContent(loadingState = true) {
+    AuthenticationContent() {
 
     }
 }
