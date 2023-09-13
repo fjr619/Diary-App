@@ -16,6 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.rememberNavController
+import com.fjr619.diary.navigation.Screen
+import com.fjr619.diary.navigation.SetupNavGraph
 import com.fjr619.diary.ui.theme.DiaryTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,17 +27,10 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         setContent {
             DiaryTheme {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "main tidak ada",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp)
-                }
-
+                val navController = rememberNavController()
+                SetupNavGraph(
+                    startDestination = Screen.Authentication.route,
+                    navController = navController)
             }
         }
     }
