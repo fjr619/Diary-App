@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -66,7 +67,7 @@ fun NavGraphBuilder.authenticationRoute(
     navigateToHome: () -> Unit
 ) {
     composable(route = Screen.Authentication.route) {
-        val viewModel: AuthenticationViewModel = viewModel()
+        val viewModel: AuthenticationViewModel = hiltViewModel()
         val loadingState by viewModel.loadingState
         val authenticated by viewModel.authenticated
 

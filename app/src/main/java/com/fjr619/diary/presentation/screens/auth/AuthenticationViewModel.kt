@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fjr619.diary.util.Constants
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.realm.kotlin.mongodb.App
 import io.realm.kotlin.mongodb.Credentials
 import io.realm.kotlin.mongodb.GoogleAuthType
@@ -12,8 +13,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class AuthenticationViewModel: ViewModel() {
+@HiltViewModel
+class AuthenticationViewModel @Inject constructor(
+    val mongoApp: App
+): ViewModel() {
 
     init {
         Log.e("TAG", "init AuthenticationViewModel")
@@ -35,8 +40,7 @@ class AuthenticationViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 val result = withContext(Dispatchers.IO) {
-                    App.create(Constants.APP_ID)
-                        .login(
+                    mongoApp.login(
                             Credentials.jwt(tokenId)
                         ).loggedIn
                 }
