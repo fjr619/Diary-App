@@ -83,46 +83,46 @@ dependencies {
 
     // Room components
     implementation("androidx.room:room-runtime:2.5.2")
-    kapt ("androidx.room:room-compiler:2.5.2")
+    kapt("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
 
     // Runtime Compose
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
     // Splash API
-    implementation ("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Mongo DB Realm
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
-    implementation ("io.realm.kotlin:library-sync:1.10.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0")
+    implementation("io.realm.kotlin:library-sync:1.10.0")
 
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.47")
     kapt("com.google.dagger:hilt-android-compiler:2.47")
-    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 
     // Coil
-    implementation ("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.3.0")
 
     // Pager - Accompanist
-    implementation ("com.google.accompanist:accompanist-pager:0.27.0")
+    implementation("com.google.accompanist:accompanist-pager:0.27.0")
 
     // Date-Time Picker
-    implementation ("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
 
     // CALENDAR
-    implementation ("com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2")
 
     // CLOCK
-    implementation ("com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:clock:1.0.2")
 
     // Message Bar Compose
-    implementation ("com.github.stevdza-san:MessageBarCompose:1.0.5")
+    implementation("com.github.stevdza-san:MessageBarCompose:1.0.5")
 
-            // One-Tap Compose
-    implementation ("com.github.stevdza-san:OneTapCompose:1.0.7")
+    // One-Tap Compose
+    implementation("com.github.stevdza-san:OneTapCompose:1.0.7")
 
 
-            // Desugar JDK
-    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:2.0.3")
+    // Desugar JDK
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 }
