@@ -30,14 +30,11 @@ class HomeViewModel: ViewModel() {
 
     private fun observeAllDiaries() {
         viewModelScope.launch {
-            diaries.value = RequestState.Loading
-            delay(200L)
             withContext(Dispatchers.IO) {
                 MongoRepositoryImpl.getAllDiaries().collect { it ->
                     diaries.value = it
                 }
             }
-
         }
     }
 

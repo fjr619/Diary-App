@@ -44,17 +44,19 @@ import androidx.compose.ui.unit.dp
 import com.fjr619.diary.R
 import com.fjr619.diary.data.repository.Diaries
 import com.fjr619.diary.util.RequestState
+import org.mongodb.kbson.ObjectId
+import java.time.LocalDate
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
     diaries: Diaries,
     drawerState: DrawerState,
     onMenuClicked: () -> Unit,
     onDateSelected: () -> Unit,
     onSignoutClicked: () -> Unit,
     navigateToWrite: () -> Unit,
+    onShowHideGallery:(LocalDate, ObjectId) -> Unit
 ) {
     var padding by remember {
         mutableStateOf(PaddingValues())
@@ -88,10 +90,11 @@ fun HomeScreen(
                 when (diaries) {
                     is RequestState.Success -> {
                         HomeContent(
-                            viewModel = viewModel,
                             paddingValues = it,
                             diaries = diaries.data,
-                            onclick = {})
+                            onclick = {},
+                            onShowHideGallery = onShowHideGallery
+                        )
                     }
 
                     is RequestState.Error -> {

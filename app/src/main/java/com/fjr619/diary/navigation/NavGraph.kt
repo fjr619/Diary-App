@@ -116,7 +116,6 @@ fun NavGraphBuilder.homeRoute(
         }
         val scope = rememberCoroutineScope()
         HomeScreen(
-            viewModel = viewModel,
             diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
@@ -128,7 +127,8 @@ fun NavGraphBuilder.homeRoute(
             onSignoutClicked = {
                 signOutDialogOpened = true
             },
-            navigateToWrite = navigateToWrite
+            navigateToWrite = navigateToWrite,
+            onShowHideGallery = viewModel::updateOpenGallery
         )
 
         DisplayAlertDialog(

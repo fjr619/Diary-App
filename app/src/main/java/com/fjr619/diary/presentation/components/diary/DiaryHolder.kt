@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,16 +27,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fjr619.diary.model.Diary
-import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.ui.theme.Elevation
 import com.fjr619.diary.util.toInstant
+import org.mongodb.kbson.ObjectId
+import java.time.LocalDate
 import java.time.ZoneId
 
 @Composable
 fun DiaryHolder(
-    viewModel: HomeViewModel,
     diary: Diary,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
+    onShowHideGallery: (LocalDate, ObjectId) -> Unit
 ) {
     var localDensity = LocalDensity.current
     var componentHeight by remember { mutableStateOf(0.dp) }
@@ -89,12 +89,10 @@ fun DiaryHolder(
                     ShowGalleryButton(
                         galleryOpened = diary.galleryOpened,
                         onClick = {
-                            viewModel.updateOpenGallery(
-                                diary.date.toInstant().atZone(ZoneId.systemDefault())
-                                    .toLocalDate(),
+                            onShowHideGallery(
+                                diary.date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
                                 diary._id
                             )
-                            Log.e("TAG", "---galleryOpened ${diary.galleryOpened}")
                         }
 
                     )

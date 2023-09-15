@@ -15,15 +15,16 @@ import androidx.compose.ui.unit.dp
 import com.fjr619.diary.DiaryApp
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.presentation.components.diary.DiaryHolder
+import org.mongodb.kbson.ObjectId
 import java.time.LocalDate
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeContent(
-    viewModel: HomeViewModel,
     paddingValues: PaddingValues,
     diaries: Map<LocalDate, List<Diary>>,
-    onclick: (String) -> Unit
+    onclick: (String) -> Unit,
+    onShowHideGallery:(LocalDate, ObjectId) -> Unit
 ) {
     if(diaries.isNotEmpty()) {
         LazyColumn(
@@ -47,8 +48,10 @@ fun HomeContent(
                     key = { it._id.toString() }
                 ) {
                     DiaryHolder(
-                        viewModel = viewModel,
-                        diary = it, onClick = onclick)
+                        diary = it,
+                        onClick = onclick,
+                        onShowHideGallery = onShowHideGallery
+                    )
                 }
             }
         }
