@@ -27,9 +27,8 @@ import java.util.Locale
 
 @Composable
 fun DiaryHeader(moodName: String, time: Instant) {
-    val mood by remember {
-        mutableStateOf(Mood.valueOf(moodName))
-    }
+
+    val mood = Mood.valueOf(moodName)
 
     val formatter = remember {
         DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())

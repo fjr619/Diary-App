@@ -27,6 +27,7 @@ import com.fjr619.diary.presentation.components.DisplayAlertDialog
 import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.presentation.screens.home.HomeScreen
+import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.util.Constants
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
@@ -107,12 +108,15 @@ fun NavGraphBuilder.homeRoute(
     navigateToAuth:() -> Unit
 ) {
     composable(route = Screen.Home.route) {
+        val viewModel: HomeViewModel = viewModel()
+        val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by rememberSaveable {
             mutableStateOf(false)
         }
         val scope = rememberCoroutineScope()
         HomeScreen(
+            diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +40,7 @@ fun DiaryHolder(
 ) {
     var localDensity = LocalDensity.current
     var componentHeight by remember { mutableStateOf(0.dp) }
-    var galleryOpened by remember { mutableStateOf(false) }
+    var galleryOpened by rememberSaveable { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.clickable(
