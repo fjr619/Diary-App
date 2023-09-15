@@ -48,6 +48,7 @@ import com.fjr619.diary.util.RequestState
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
+    viewModel: HomeViewModel,
     diaries: Diaries,
     drawerState: DrawerState,
     onMenuClicked: () -> Unit,
@@ -87,6 +88,7 @@ fun HomeScreen(
                 when (diaries) {
                     is RequestState.Success -> {
                         HomeContent(
+                            viewModel = viewModel,
                             paddingValues = it,
                             diaries = diaries.data,
                             onclick = {})

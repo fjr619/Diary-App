@@ -1,5 +1,6 @@
 package com.fjr619.diary.presentation.components.diary
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,22 +26,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fjr619.diary.model.Diary
-import com.fjr619.diary.model.Mood
+import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.ui.theme.Elevation
 import com.fjr619.diary.util.toInstant
-import io.realm.kotlin.ext.realmListOf
+import java.time.ZoneId
 
 @Composable
 fun DiaryHolder(
+    viewModel: HomeViewModel,
     diary: Diary,
     onClick: (String) -> Unit
 ) {
     var localDensity = LocalDensity.current
     var componentHeight by remember { mutableStateOf(0.dp) }
-    var galleryOpened by rememberSaveable { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.clickable(
@@ -67,9 +67,8 @@ fun DiaryHolder(
             modifier = Modifier
                 .clip(shape = Shapes().medium)
                 .onGloballyPositioned {
-                    componentHeight = with(localDensity) {
-                        it.size.height.toDp()
-                    }
+                    componentHeight = with(localDensity) { it.size.height.toDp() }
+                    Log.e("TAG", "componentHeight ${componentHeight.value}")
                 },
             tonalElevation = Elevation.Level1
         ) {
@@ -88,11 +87,20 @@ fun DiaryHolder(
 
                 if (diary.images.isNotEmpty()) {
                     ShowGalleryButton(
-                        galleryOpened = galleryOpened,
-                        onClick = { galleryOpened = !galleryOpened })
+                        galleryOpened = diary.galleryOpened,
+                        onClick = {
+                            viewModel.updateOpenGallery(
+                                diary.date.toInstant().atZone(ZoneId.systemDefault())
+                                    .toLocalDate(),
+                                diary._id
+                            )
+                            Log.e("TAG", "---galleryOpened ${diary.galleryOpened}")
+                        }
+
+                    )
                 }
 
-                AnimatedVisibility(visible = galleryOpened) {
+                AnimatedVisibility(visible = diary.galleryOpened) {
                     Column(
                         modifier = Modifier.padding(14.dp)
                     ) {
@@ -101,20 +109,5 @@ fun DiaryHolder(
                 }
             }
         }
-    }
-}
-
-@Composable
-@Preview
-fun DiaryHolderPreview() {
-    DiaryHolder(Diary()
-        .apply {
-            title = "My Diary"
-            description =
-                "adkpaowdkapodkaopdkapoddakdopadkadpokdpaodad afkawpeof a[pwoekf aw[poef ka[wopefk a[wopefk a[pwoef ka[wopef ka[pwoefk ap[woefk ap[woefk a[wpoef kawp[oefk aop[we"
-            mood = Mood.Angry.name
-            images = realmListOf("", "")
-        }) {
-
     }
 }

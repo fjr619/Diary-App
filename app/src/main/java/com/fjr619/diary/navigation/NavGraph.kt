@@ -116,6 +116,7 @@ fun NavGraphBuilder.homeRoute(
         }
         val scope = rememberCoroutineScope()
         HomeScreen(
+            viewModel = viewModel,
             diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
