@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDate
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel : ViewModel() {
 
     var diaries: MutableState<Diaries> = mutableStateOf(RequestState.Idle)
 
@@ -30,18 +30,17 @@ class HomeViewModel: ViewModel() {
 
     private fun observeAllDiaries() {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                MongoRepositoryImpl.getAllDiaries().collect { it ->
-                    diaries.value = it
-                }
+            MongoRepositoryImpl.getAllDiaries().collectLatest { it ->
+                diaries.value = it
             }
         }
     }
 
     fun updateOpenGallery(localDate: LocalDate, id: ObjectId) {
-        when(diaries.value) {
+        when (diaries.value) {
             is RequestState.Success -> {
-                val data = (diaries.value as RequestState.Success<Map<LocalDate, SnapshotStateList<Diary>>>).data
+                val data =
+                    (diaries.value as RequestState.Success<Map<LocalDate, SnapshotStateList<Diary>>>).data
                 val listDiary = data[localDate]
 
                 listDiary?.let { listDiary ->
@@ -67,6 +66,7 @@ class HomeViewModel: ViewModel() {
 
                 }
             }
+
             else -> {}
         }
     }

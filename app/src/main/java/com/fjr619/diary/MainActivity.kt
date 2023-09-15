@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                 SetupNavGraph(
                     startDestination = getStartDestination(),
                     navController = navController,
-                    onDismissSplashScreen = {
+                    onDataLoaded = {
                         keepSplashOpened = false
                     }
                 )

@@ -20,9 +20,6 @@ class AuthenticationViewModel @Inject constructor(
     val mongoApp: App
 ): ViewModel() {
 
-    init {
-        Log.e("TAG", "init AuthenticationViewModel")
-    }
     var loadingState = mutableStateOf(false)
         private set
 

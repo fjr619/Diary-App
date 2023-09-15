@@ -68,7 +68,6 @@ fun DiaryHolder(
                 .clip(shape = Shapes().medium)
                 .onGloballyPositioned {
                     componentHeight = with(localDensity) { it.size.height.toDp() }
-                    Log.e("TAG", "componentHeight ${componentHeight.value}")
                 },
             tonalElevation = Elevation.Level1
         ) {

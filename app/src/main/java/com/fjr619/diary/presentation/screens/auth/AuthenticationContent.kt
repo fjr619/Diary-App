@@ -68,7 +68,6 @@ fun AuthenticationContent(
                 GoogleButton(
                     loadingState = loadingState,
                 ) {
-                    Log.e("TAG","click content")
                     onButtonClicked.invoke()
                 }
             }
