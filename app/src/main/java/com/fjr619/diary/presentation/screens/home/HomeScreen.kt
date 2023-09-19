@@ -60,6 +60,7 @@ fun HomeScreen(
     onDateSelected: () -> Unit,
     onSignoutClicked: () -> Unit,
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit,
     onShowHideGallery:(LocalDate, ObjectId) -> Unit
 ) {
     var padding by remember {
@@ -99,7 +100,9 @@ fun HomeScreen(
                         HomeContent(
                             paddingValues = it,
                             diaries = diaries.data,
-                            onclick = {},
+                            onclick = {
+                                navigateToWriteWithArgs(it)
+                            },
                             onShowHideGallery = onShowHideGallery
                         )
                     }

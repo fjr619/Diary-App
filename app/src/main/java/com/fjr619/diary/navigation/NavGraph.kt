@@ -1,5 +1,6 @@
 package com.fjr619.diary.navigation
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -27,6 +28,7 @@ import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.presentation.screens.home.HomeScreen
 import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.presentation.screens.write.WriteScreen
+import com.fjr619.diary.presentation.screens.write.WriteViewModel
 import com.fjr619.diary.util.Constants
 import com.fjr619.diary.util.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -55,6 +57,7 @@ fun SetupNavGraph(
         )
         homeRoute(
             navigateToWrite = { navController.navigate(Screen.Write.route) },
+            navigateToWriteWithArgs = { navController.navigate(Screen.Write.passDiaryId(it)) },
             navigateToAuth = {
                 navController.popBackStack()
                 navController.navigate(Screen.Authentication.route)
@@ -116,6 +119,7 @@ fun NavGraphBuilder.authenticationRoute(
 
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
+    navigateToWriteWithArgs:(String) -> Unit,
     navigateToAuth: () -> Unit,
     onDataLoaded: () -> Unit
 ) {
@@ -147,6 +151,7 @@ fun NavGraphBuilder.homeRoute(
                 signOutDialogOpened = true
             },
             navigateToWrite = navigateToWrite,
+            navigateToWriteWithArgs = navigateToWriteWithArgs,
             onShowHideGallery = viewModel::updateOpenGallery
         )
 
@@ -184,6 +189,13 @@ fun NavGraphBuilder.writeRoute(
             }
         )
     ) {
+        val viewModel: WriteViewModel = viewModel()
+        val uiState = viewModel.uiState
+
+        LaunchedEffect(key1 = uiState) {
+            Log.i("TAG", "selected ${uiState.selectedDiaryId}")
+        }
+
         val pagerState = rememberPagerState(
             initialPage = 0,
             initialPageOffsetFraction = 0f,
