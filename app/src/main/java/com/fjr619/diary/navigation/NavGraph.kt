@@ -1,10 +1,6 @@
 package com.fjr619.diary.navigation
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -13,8 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -23,11 +17,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.fjr619.diary.model.Diary
 import com.fjr619.diary.presentation.components.DisplayAlertDialog
 import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
 import com.fjr619.diary.presentation.screens.home.HomeScreen
 import com.fjr619.diary.presentation.screens.home.HomeViewModel
+import com.fjr619.diary.presentation.screens.write.WriteScreen
 import com.fjr619.diary.util.Constants
 import com.fjr619.diary.util.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
@@ -62,7 +58,11 @@ fun SetupNavGraph(
             },
             onDataLoaded = onDataLoaded
         )
-        writeRoute()
+        writeRoute(
+            onBackPressed = {
+                navController.popBackStack()
+            }
+        )
     }
 }
 
@@ -165,7 +165,11 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
-fun NavGraphBuilder.writeRoute() {
+fun NavGraphBuilder.writeRoute(
+//    selectedDiary: Diary?,
+//    onDeleteConfirmed: () -> Unit,
+    onBackPressed: () -> Unit
+) {
     composable(
         route = Screen.Write.route,
         arguments = listOf(
@@ -176,12 +180,10 @@ fun NavGraphBuilder.writeRoute() {
             }
         )
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "write")
-        }
+        WriteScreen(
+            selectedDiary = null,
+            onDeleteConfirmed = { },
+            onBackPressed = onBackPressed
+        )
     }
 }
