@@ -1,7 +1,9 @@
 package com.fjr619.diary.presentation.screens.write
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
@@ -43,10 +45,7 @@ fun WriteTopBar(
             }
         },
         title = {
-            Column(
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center
-            ) {
+            Column {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Happy",

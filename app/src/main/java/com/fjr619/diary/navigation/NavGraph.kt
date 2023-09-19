@@ -1,5 +1,7 @@
 package com.fjr619.diary.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.fjr619.diary.model.Diary
+import com.fjr619.diary.model.Mood
 import com.fjr619.diary.presentation.components.DisplayAlertDialog
 import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
 import com.fjr619.diary.presentation.screens.auth.Authenticationscreen
@@ -165,6 +168,7 @@ fun NavGraphBuilder.homeRoute(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 fun NavGraphBuilder.writeRoute(
 //    selectedDiary: Diary?,
 //    onDeleteConfirmed: () -> Unit,
@@ -180,8 +184,17 @@ fun NavGraphBuilder.writeRoute(
             }
         )
     ) {
+        val pagerState = rememberPagerState(
+            initialPage = 0,
+            initialPageOffsetFraction = 0f,
+            pageCount = {
+                Mood.values().size
+            }
+        )
+
         WriteScreen(
             selectedDiary = null,
+            pagerState = pagerState,
             onDeleteConfirmed = { },
             onBackPressed = onBackPressed
         )
