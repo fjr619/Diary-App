@@ -67,7 +67,9 @@ fun SetupNavGraph(
             onDataLoaded = onDataLoaded
         )
         writeRoute(
-            onBackPressed = { navController.popBackStack() },
+            onBackPressed = {
+                navController.popBackStack()
+            },
             onDataLoaded = onDataLoaded
         )
     }
@@ -223,7 +225,16 @@ fun NavGraphBuilder.writeRoute(
             onBackPressed = onBackPressed,
             onTitleChanged = viewModel::setTitle,
             onDescriptionChanged = viewModel::setDesc,
-            moodName = { uiState.mood.name }
+            moodName = { uiState.mood.name },
+            onSaveClicked = {
+                viewModel.insertDiary(
+                    diary = it,
+                    onSuccess = {
+                        onBackPressed()
+                    },
+                    onError = {}
+                )
+            }
         )
     }
 }

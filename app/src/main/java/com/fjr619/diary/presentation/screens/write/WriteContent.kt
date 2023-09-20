@@ -1,7 +1,9 @@
 package com.fjr619.diary.presentation.screens.write
 
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.fjr619.diary.model.Diary
 import com.fjr619.diary.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
 
@@ -41,13 +44,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 @Composable
 fun WriteContent(
     paddingValues: PaddingValues,
-    title: String,
-    description: String,
+    uiState: UIState,
+//    title: String,
+//    description: String,
     pagerState: PagerState,
     onTitleChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit
+    onDescriptionChanged: (String) -> Unit,
+    onSaveClicked: (Diary) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -89,7 +95,7 @@ fun WriteContent(
             Spacer(modifier = Modifier.height(30.dp))
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = title,
+                value = uiState.title,
                 onValueChange = onTitleChanged,
                 placeholder = {
                     Text(text = "Title")
@@ -107,7 +113,7 @@ fun WriteContent(
 
             TextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = description,
+                value = uiState.description,
                 onValueChange = onDescriptionChanged,
                 placeholder = {
                     Text(text = "Tell me about it")
@@ -128,10 +134,25 @@ fun WriteContent(
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(54.dp),
+                    .fillMaxWidth(),
                 shape = Shapes().small,
-                onClick = {}) {
+                onClick = {
+                    if (uiState.title.isNotEmpty() && uiState.description.isNotEmpty()) {
+                        onSaveClicked(
+                            Diary().apply {
+                                this.title = uiState.title
+                                this.description = uiState.description
+                                this.mood = uiState.mood.name
+                            }
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Fields cannot be empty.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }) {
                 Text(text = "Save")
             }
         }

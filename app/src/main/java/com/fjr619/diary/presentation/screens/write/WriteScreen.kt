@@ -19,7 +19,8 @@ fun WriteScreen(
     onDescriptionChanged: (String)-> Unit,
     onDeleteConfirmed: () -> Unit,
     onBackPressed: () -> Unit,
-    moodName: () -> String
+    moodName: () -> String,
+    onSaveClicked: (Diary) -> Unit,
 ) {
 
 
@@ -36,11 +37,13 @@ fun WriteScreen(
     ) {
         WriteContent(
             paddingValues = it,
-            title = uiState.title,
-            description = uiState.description,
+            uiState = uiState,
+//            title = uiState.title,
+//            description = uiState.description,
             pagerState = pagerState,
             onTitleChanged = onTitleChanged,
-            onDescriptionChanged = onDescriptionChanged
+            onDescriptionChanged = onDescriptionChanged,
+            onSaveClicked = onSaveClicked
         )
     }
 }

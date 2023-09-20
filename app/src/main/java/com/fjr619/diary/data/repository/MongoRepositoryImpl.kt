@@ -99,16 +99,31 @@ object MongoRepositoryImpl : MongoRepository {
                         }
                     }
 
-            }catch (e: Exception) {
-                flow{
+            } catch (e: Exception) {
+                flow {
                     emit(RequestState.Error(e))
                 }
 
             }
         } else {
-           flow {
-               emit( RequestState.Error(UserNotAuthenticatedException()))
-           }
+            flow {
+                emit(RequestState.Error(UserNotAuthenticatedException()))
+            }
+        }
+    }
+
+    override suspend fun insertDiary(diary: Diary): RequestState<Diary> {
+        return if (user != null) {
+            realm.write {
+                try {
+                    val addedDiary = copyToRealm(diary.apply { ownerId = user.id })
+                    RequestState.Success(data = addedDiary)
+                } catch (e: Exception) {
+                    RequestState.Error(e)
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
         }
     }
 }
