@@ -66,16 +66,17 @@ fun HomeScreen(
     var padding by remember {
         mutableStateOf(PaddingValues())
     }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+//    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     NavigationDrawer(
         drawerState = drawerState,
         onSignoutClicked = onSignoutClicked
     ) {
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+//            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
                 HomeTopBar(
-                    scrollBehavior = scrollBehavior,
+//                    scrollBehavior = scrollBehavior,
                     onMenuClicked = onMenuClicked,
                     onDateSelected = onDateSelected
                 )

@@ -27,14 +27,48 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.presentation.components.DisplayAlertDialog
+import com.fjr619.diary.util.toInstant
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WriteTopBar(
     selectedDiary: Diary?,
+    moodName: () -> String,
     onDeleteConfirmed: () -> Unit,
     onBackPressed: () -> Unit
 ) {
+    val currentDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+
+    val currentTime by remember {
+        mutableStateOf(LocalTime.now())
+    }
+
+    val formattedDate = remember(currentDate) {
+        DateTimeFormatter.ofPattern("dd MM yyy")
+            .format(currentDate).uppercase()
+    }
+
+    val formattedTime = remember(currentDate) {
+        DateTimeFormatter.ofPattern("hh:mm a")
+            .format(currentTime).uppercase()
+    }
+
+    val selectedDiaryTime = remember(selectedDiary) {
+        selectedDiary?.let {
+            SimpleDateFormat("dd MM yyyy, hh:mm a", Locale.getDefault())
+                .format(Date.from(it.date.toInstant())).uppercase()
+        } ?: run { "$formattedDate $formattedTime" }
+
+    }
+
     CenterAlignedTopAppBar(
         navigationIcon = {
             IconButton(onClick = onBackPressed) {
@@ -48,7 +82,7 @@ fun WriteTopBar(
             Column {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Happy",
+                    text = moodName(),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold
                     ),
@@ -56,7 +90,7 @@ fun WriteTopBar(
                 )
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "10 Jan 2023, 10:00 AM",
+                    text = selectedDiaryTime,
                     style = MaterialTheme.typography.bodySmall,
                     textAlign = TextAlign.Center
                 )

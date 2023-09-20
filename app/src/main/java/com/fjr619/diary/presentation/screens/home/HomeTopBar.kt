@@ -16,12 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
+//    scrollBehavior: TopAppBarScrollBehavior,
     onMenuClicked: () -> Unit,
     onDateSelected: () -> Unit
 ) {
     TopAppBar(
-        scrollBehavior = scrollBehavior,
+//        scrollBehavior = scrollBehavior,
         title = {
             Text(
                 text = "Diary",

@@ -1,6 +1,8 @@
 package com.fjr619.diary.navigation
 
-import android.util.Log
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.DrawerValue
@@ -12,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
@@ -20,7 +23,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.fjr619.diary.model.Diary
 import com.fjr619.diary.model.Mood
 import com.fjr619.diary.presentation.components.DisplayAlertDialog
 import com.fjr619.diary.presentation.screens.auth.AuthenticationViewModel
@@ -30,11 +32,11 @@ import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.presentation.screens.write.WriteScreen
 import com.fjr619.diary.presentation.screens.write.WriteViewModel
 import com.fjr619.diary.util.Constants
-import com.fjr619.diary.util.RequestState
 import com.stevdzasan.messagebar.rememberMessageBarState
 import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -65,10 +67,13 @@ fun SetupNavGraph(
             onDataLoaded = onDataLoaded
         )
         writeRoute(
-            onBackPressed = {
-                navController.popBackStack()
-            }
+            onBackPressed = { navController.popBackStack() },
+            onDataLoaded = onDataLoaded
         )
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        onDataLoaded()
     }
 }
 
@@ -83,10 +88,6 @@ fun NavGraphBuilder.authenticationRoute(
 
         val onTapState = rememberOneTapSignInState()
         val messageBarState = rememberMessageBarState()
-
-        LaunchedEffect(key1 = Unit) {
-            onDataLoaded()
-        }
 
         Authenticationscreen(
             authenticated = authenticated,
@@ -119,7 +120,7 @@ fun NavGraphBuilder.authenticationRoute(
 
 fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
-    navigateToWriteWithArgs:(String) -> Unit,
+    navigateToWriteWithArgs: (String) -> Unit,
     navigateToAuth: () -> Unit,
     onDataLoaded: () -> Unit
 ) {
@@ -131,12 +132,6 @@ fun NavGraphBuilder.homeRoute(
             mutableStateOf(false)
         }
         val scope = rememberCoroutineScope()
-
-        LaunchedEffect(key1 = diaries) {
-            if (diaries.value !is RequestState.Loading) {
-                onDataLoaded()
-            }
-        }
 
         HomeScreen(
             diaries = diaries.value,
@@ -177,7 +172,8 @@ fun NavGraphBuilder.homeRoute(
 fun NavGraphBuilder.writeRoute(
 //    selectedDiary: Diary?,
 //    onDeleteConfirmed: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onDataLoaded: () -> Unit
 ) {
     composable(
         route = Screen.Write.route,
@@ -187,15 +183,16 @@ fun NavGraphBuilder.writeRoute(
                 nullable = true
                 defaultValue = null
             }
-        )
+        ),
+        enterTransition = { fadeIn(animationSpec = tween(500)) },
+        exitTransition = { fadeOut(animationSpec = tween(300)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(500)) },
+        popExitTransition = { fadeOut(animationSpec = tween(300)) }
     ) {
+
+
         val viewModel: WriteViewModel = viewModel()
         val uiState = viewModel.uiState
-
-        LaunchedEffect(key1 = uiState) {
-            Log.i("TAG", "selected ${uiState.selectedDiaryId}")
-        }
-
         val pagerState = rememberPagerState(
             initialPage = 0,
             initialPageOffsetFraction = 0f,
@@ -204,14 +201,29 @@ fun NavGraphBuilder.writeRoute(
             }
         )
 
+        LaunchedEffect(pagerState) {
+            snapshotFlow {
+                pagerState.currentPage
+            }.distinctUntilChanged()
+                .collect {
+                    val a = Mood.values()[it]
+                    viewModel.setMood(a)
+                }
+        }
+
+        //Update the mood when selecting an existing diary
+        LaunchedEffect(key1 = uiState.mood) {
+            pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
+        }
+
         WriteScreen(
             uiState = uiState,
-            selectedDiary = null,
             pagerState = pagerState,
             onDeleteConfirmed = { },
             onBackPressed = onBackPressed,
             onTitleChanged = viewModel::setTitle,
-            onDescriptionChanged = viewModel::setDesc
+            onDescriptionChanged = viewModel::setDesc,
+            moodName = { uiState.mood.name }
         )
     }
 }

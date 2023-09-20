@@ -13,26 +13,24 @@ import com.fjr619.diary.model.Mood
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WriteScreen(
-    selectedDiary: Diary?,
     uiState: UIState,
     pagerState: PagerState,
     onTitleChanged: (String)-> Unit,
     onDescriptionChanged: (String)-> Unit,
     onDeleteConfirmed: () -> Unit,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    moodName: () -> String
 ) {
 
-    //Update the mood when selecting an existing diary
-//    LaunchedEffect(key1 = uiState.mood) {
-//        pagerState.scrollToPage(Mood.valueOf(uiState.mood.name).ordinal)
-//    }
 
+    
     Scaffold(
         topBar = {
             WriteTopBar(
-                selectedDiary = selectedDiary,
+                selectedDiary = uiState.selectedDiary,
                 onDeleteConfirmed = onDeleteConfirmed,
-                onBackPressed = onBackPressed
+                onBackPressed = onBackPressed,
+                moodName = moodName,
             )
         }
     ) {
