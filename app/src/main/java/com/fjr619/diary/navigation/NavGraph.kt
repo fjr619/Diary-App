@@ -227,7 +227,7 @@ fun NavGraphBuilder.writeRoute(
             onDescriptionChanged = viewModel::setDesc,
             moodName = { uiState.mood.name },
             onSaveClicked = {
-                viewModel.insertDiary(
+                viewModel.upsertDiary(
                     diary = it,
                     onSuccess = {
                         onBackPressed()

@@ -1,5 +1,6 @@
 package com.fjr619.diary.data.repository
 
+import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.util.Constants.APP_ID
@@ -88,15 +89,10 @@ object MongoRepositoryImpl : MongoRepository {
             try {
                 realm.query<Diary>(query = "_id == $0", diaryId)
                     .find()
-                    .first()
                     .asFlow()
                     .flowOn(Dispatchers.IO)
                     .map {
-                        it.obj?.let { diary ->
-                            RequestState.Success(data = diary)
-                        } ?: kotlin.run {
-                            RequestState.Error(Exception("No diary found"))
-                        }
+                        RequestState.Success(data = it.list.first())
                     }
 
             } catch (e: Exception) {
@@ -126,6 +122,26 @@ object MongoRepositoryImpl : MongoRepository {
             RequestState.Error(UserNotAuthenticatedException())
         }
     }
+
+    override suspend fun updateDiary(diary: Diary): RequestState<Diary> {
+        return if (user != null) {
+            Log.e("TAG", "udpate diary ${diary._id.toHexString()}")
+            realm.write {
+                val queriedDiary = query<Diary>(query = "_id == $0", diary._id).first().find()
+                if (queriedDiary != null) {
+                    queriedDiary.title = diary.title
+                    queriedDiary.description = diary.description
+                    queriedDiary.mood = diary.mood
+                    queriedDiary.images = diary.images
+                    queriedDiary.date = diary.date
+                    RequestState.Success(data = queriedDiary)
+                } else {
+                    RequestState.Error(error = Exception("Queried Diary does not exist."))
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+        }    }
 }
 
 private class UserNotAuthenticatedException : Exception("User is not logged in")

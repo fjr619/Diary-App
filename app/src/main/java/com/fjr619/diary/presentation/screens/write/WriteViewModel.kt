@@ -12,12 +12,7 @@ import com.fjr619.diary.model.Diary
 import com.fjr619.diary.model.Mood
 import com.fjr619.diary.util.Constants
 import com.fjr619.diary.util.RequestState
-import io.realm.kotlin.types.annotations.PrimaryKey
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.count
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
@@ -50,11 +45,13 @@ class WriteViewModel(
 
     private fun fetchSelectedDiary() {
         uiState.selectedDiaryId?.let {
+            Log.e("TAG", "fetchSelectedDiary $it")
             viewModelScope.launch(Dispatchers.IO) {
                 MongoRepositoryImpl.getSelectedDiary(ObjectId.invoke(it))
                     .collect { diary ->
                         withContext(Dispatchers.Main) {
                             if (diary is RequestState.Success) {
+                                Log.e("TAG","fetch sukses ${diary.data._id.toHexString()}")
                                 setSelectedDiary(diary.data)
                                 setTitle(diary.data.title)
                                 setDesc(diary.data.description)
@@ -67,23 +64,55 @@ class WriteViewModel(
         }
     }
 
-    fun insertDiary(
+    fun upsertDiary(
         diary: Diary,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
+            Log.e("TAG", "id ${uiState.selectedDiaryId} ${diary._id.toHexString()}")
+            if (uiState.selectedDiaryId != null) {
+                updateDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+            } else {
+                insertDiary(diary = diary, onSuccess = onSuccess, onError = onError)
+            }
+        }
+    }
+
+    private suspend fun insertDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
             val result = MongoRepositoryImpl.insertDiary(diary = diary)
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
                 }
-            } else if (result is RequestState.Error){
+            } else if (result is RequestState.Error) {
                 withContext(Dispatchers.Main) {
                     onError(result.error.message.toString())
                 }
             }
-        }
+
+    }
+
+    private suspend fun updateDiary(
+        diary: Diary,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+            val result = MongoRepositoryImpl.updateDiary(diary = diary)
+            if (result is RequestState.Success) {
+                withContext(Dispatchers.Main) {
+                    onSuccess()
+                }
+            } else if (result is RequestState.Error) {
+                Log.e("TAG", "error ${result.error.message.toString()}")
+                withContext(Dispatchers.Main) {
+                    onError(result.error.message.toString())
+                }
+            }
     }
 
     fun setTitle(title: String) {
