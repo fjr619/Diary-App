@@ -144,11 +144,6 @@ fun WriteContent(
                                 this.title = uiState.title
                                 this.description = uiState.description
                                 this.mood = uiState.mood.name
-
-                                uiState.selectedDiaryId?.let {
-                                    this._id = ObjectId.invoke(it)
-                                    this.date = uiState.selectedDiary!!.date
-                                }
                             }
                         )
                     } else {

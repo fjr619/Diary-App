@@ -12,17 +12,21 @@ import com.fjr619.diary.model.Diary
 import com.fjr619.diary.model.Mood
 import com.fjr619.diary.util.Constants
 import com.fjr619.diary.util.RequestState
+import com.fjr619.diary.util.toRealmInstant
+import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
+import java.time.ZonedDateTime
 
 data class UIState(
     val selectedDiaryId: String? = null,
     val selectedDiary: Diary? = null,
     val title: String = "",
     val description: String = "",
-    val mood: Mood = Mood.Neutral
+    val mood: Mood = Mood.Neutral,
+    val updateedDateTime: RealmInstant? = null
 )
 
 class WriteViewModel(
@@ -84,7 +88,11 @@ class WriteViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-            val result = MongoRepositoryImpl.insertDiary(diary = diary)
+            val result = MongoRepositoryImpl.insertDiary(diary = diary.apply {
+                if(uiState.updateedDateTime != null) {
+                    date = uiState.updateedDateTime!!
+                }
+            })
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
@@ -102,7 +110,14 @@ class WriteViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-            val result = MongoRepositoryImpl.updateDiary(diary = diary)
+            val result = MongoRepositoryImpl.updateDiary(diary = diary.apply {
+                this._id = ObjectId.invoke(uiState.selectedDiaryId!!)
+                this.date = if (uiState.updateedDateTime != null) {
+                    uiState.updateedDateTime!!
+                } else {
+                    uiState.selectedDiary!!.date
+                }
+            })
             if (result is RequestState.Success) {
                 withContext(Dispatchers.Main) {
                     onSuccess()
@@ -130,6 +145,12 @@ class WriteViewModel(
     fun setSelectedDiary(diary: Diary) {
         uiState = uiState.copy(
             selectedDiary = diary
+        )
+    }
+
+    fun updateDateTime(zonedDateTime: ZonedDateTime) {
+        uiState = uiState.copy(
+            updateedDateTime = zonedDateTime.toInstant().toRealmInstant()
         )
     }
 }

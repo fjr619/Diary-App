@@ -234,7 +234,8 @@ fun NavGraphBuilder.writeRoute(
                     },
                     onError = {}
                 )
-            }
+            },
+            onDateTimeUpdate = viewModel::updateDateTime
         )
     }
 }

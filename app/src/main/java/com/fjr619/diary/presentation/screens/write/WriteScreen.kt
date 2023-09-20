@@ -5,9 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.fjr619.diary.model.Diary
-import com.fjr619.diary.model.Mood
+import java.time.ZonedDateTime
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -21,7 +20,9 @@ fun WriteScreen(
     onBackPressed: () -> Unit,
     moodName: () -> String,
     onSaveClicked: (Diary) -> Unit,
-) {
+    onDateTimeUpdate: (ZonedDateTime) -> Unit,
+
+    ) {
 
 
     
@@ -32,6 +33,7 @@ fun WriteScreen(
                 onDeleteConfirmed = onDeleteConfirmed,
                 onBackPressed = onBackPressed,
                 moodName = moodName,
+                onDateTimeUpdate =  onDateTimeUpdate
             )
         }
     ) {
