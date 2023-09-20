@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDate
 
-typealias Diaries = RequestState<Map<LocalDate,SnapshotStateList<Diary>>>
+typealias Diaries = RequestState<Map<LocalDate, SnapshotStateList<Diary>>>
 
 interface MongoRepository {
     fun configureTheRealm()
@@ -16,4 +16,5 @@ interface MongoRepository {
 
     suspend fun insertDiary(diary: Diary): RequestState<Diary>
     suspend fun updateDiary(diary: Diary): RequestState<Diary>
+    suspend fun deleteDiary(id: ObjectId): RequestState<Boolean>
 }

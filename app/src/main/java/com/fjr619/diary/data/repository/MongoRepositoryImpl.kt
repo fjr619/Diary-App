@@ -2,6 +2,7 @@ package com.fjr619.diary.data.repository
 
 import android.util.Log
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.room.util.query
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.util.Constants.APP_ID
 import com.fjr619.diary.util.RequestState
@@ -141,7 +142,30 @@ object MongoRepositoryImpl : MongoRepository {
             }
         } else {
             RequestState.Error(UserNotAuthenticatedException())
-        }    }
+        }
+    }
+
+    override suspend fun deleteDiary(id: ObjectId): RequestState<Boolean> {
+        return if (user != null) {
+            realm.write {
+                val diary =
+                    query<Diary>(query = "_id == $0 AND ownerId == $1", id, user.id)
+                        .first().find()
+                if (diary != null) {
+                    try {
+                        delete(diary)
+                        RequestState.Success(data = true)
+                    } catch (e: Exception) {
+                        RequestState.Error(e)
+                    }
+                } else {
+                    RequestState.Error(Exception("Diary does not exist."))
+                }
+            }
+        } else {
+            RequestState.Error(UserNotAuthenticatedException())
+        }
+    }
 }
 
 private class UserNotAuthenticatedException : Exception("User is not logged in")

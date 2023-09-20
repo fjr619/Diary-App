@@ -15,6 +15,7 @@ import com.fjr619.diary.util.RequestState
 import com.fjr619.diary.util.toRealmInstant
 import io.realm.kotlin.types.RealmInstant
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
@@ -49,13 +50,15 @@ class WriteViewModel(
 
     private fun fetchSelectedDiary() {
         uiState.selectedDiaryId?.let {
-            Log.e("TAG", "fetchSelectedDiary $it")
             viewModelScope.launch(Dispatchers.IO) {
                 MongoRepositoryImpl.getSelectedDiary(ObjectId.invoke(it))
+                    .catch {
+                        emit(RequestState.Error(Exception("Diary is already deleted")))
+                    }
                     .collect { diary ->
                         withContext(Dispatchers.Main) {
                             if (diary is RequestState.Success) {
-                                Log.e("TAG","fetch sukses ${diary.data._id.toHexString()}")
+                                Log.e("TAG", "fetch sukses ${diary.data._id.toHexString()}")
                                 setSelectedDiary(diary.data)
                                 setTitle(diary.data.title)
                                 setDesc(diary.data.description)
@@ -63,7 +66,6 @@ class WriteViewModel(
                             }
                         }
                     }
-
             }
         }
     }
@@ -88,20 +90,20 @@ class WriteViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-            val result = MongoRepositoryImpl.insertDiary(diary = diary.apply {
-                if(uiState.updateedDateTime != null) {
-                    date = uiState.updateedDateTime!!
-                }
-            })
-            if (result is RequestState.Success) {
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
-            } else if (result is RequestState.Error) {
-                withContext(Dispatchers.Main) {
-                    onError(result.error.message.toString())
-                }
+        val result = MongoRepositoryImpl.insertDiary(diary = diary.apply {
+            if (uiState.updateedDateTime != null) {
+                date = uiState.updateedDateTime!!
             }
+        })
+        if (result is RequestState.Success) {
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } else if (result is RequestState.Error) {
+            withContext(Dispatchers.Main) {
+                onError(result.error.message.toString())
+            }
+        }
 
     }
 
@@ -110,24 +112,47 @@ class WriteViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-            val result = MongoRepositoryImpl.updateDiary(diary = diary.apply {
-                this._id = ObjectId.invoke(uiState.selectedDiaryId!!)
-                this.date = if (uiState.updateedDateTime != null) {
-                    uiState.updateedDateTime!!
-                } else {
-                    uiState.selectedDiary!!.date
-                }
-            })
-            if (result is RequestState.Success) {
-                withContext(Dispatchers.Main) {
-                    onSuccess()
-                }
-            } else if (result is RequestState.Error) {
-                Log.e("TAG", "error ${result.error.message.toString()}")
-                withContext(Dispatchers.Main) {
-                    onError(result.error.message.toString())
-                }
+        val result = MongoRepositoryImpl.updateDiary(diary = diary.apply {
+            this._id = ObjectId.invoke(uiState.selectedDiaryId!!)
+            this.date = if (uiState.updateedDateTime != null) {
+                uiState.updateedDateTime!!
+            } else {
+                uiState.selectedDiary!!.date
             }
+        })
+        if (result is RequestState.Success) {
+            withContext(Dispatchers.Main) {
+                onSuccess()
+            }
+        } else if (result is RequestState.Error) {
+            Log.e("TAG", "error ${result.error.message.toString()}")
+            withContext(Dispatchers.Main) {
+                onError(result.error.message.toString())
+            }
+        }
+    }
+
+    fun deleteDiary(
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            uiState.selectedDiaryId?.let {
+                val result = MongoRepositoryImpl.deleteDiary(ObjectId.invoke(it))
+                if (result is RequestState.Success) {
+                    withContext(Dispatchers.Main) {
+                        onSuccess()
+                    }
+                } else if (result is RequestState.Error) {
+                    withContext(Dispatchers.Main) {
+                        onError(result.error.message.toString())
+
+                    }
+                }
+            } ?: kotlin.run {
+
+            }
+        }
     }
 
     fun setTitle(title: String) {
