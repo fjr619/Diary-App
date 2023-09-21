@@ -1,20 +1,20 @@
 package com.fjr619.diary.presentation.screens.write
 
-import android.widget.Space
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
@@ -39,7 +39,6 @@ import coil.request.ImageRequest
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.model.Mood
 import com.google.accompanist.pager.ExperimentalPagerApi
-import org.mongodb.kbson.ObjectId
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -59,11 +58,12 @@ fun WriteContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .imePadding()
+            .navigationBarsPadding()
             .padding(
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding(),
             )
-            .padding(bottom = 24.dp)
             .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -77,7 +77,7 @@ fun WriteContent(
             HorizontalPager(
                 state = pagerState,
 
-            ) { page ->
+                ) { page ->
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
@@ -131,7 +131,7 @@ fun WriteContent(
 
         Column(
             verticalArrangement = Arrangement.Bottom
-        ){
+        ) {
             Spacer(modifier = Modifier.height(12.dp))
             Button(
                 modifier = Modifier
