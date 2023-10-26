@@ -7,19 +7,27 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fjr619.diary.data.repository.Diaries
+import com.fjr619.diary.data.repository.MongoRepository
 import com.fjr619.diary.data.repository.MongoRepositoryImpl
 import com.fjr619.diary.model.Diary
 import com.fjr619.diary.util.RequestState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.mongodb.kbson.ObjectId
 import java.time.LocalDate
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val mongoRepository: MongoRepository
+): ViewModel() {
 
     var diaries: MutableState<Diaries> = mutableStateOf(RequestState.Idle)
 
@@ -28,9 +36,11 @@ class HomeViewModel : ViewModel() {
         observeAllDiaries()
     }
 
+    @OptIn(FlowPreview::class)
     private fun observeAllDiaries() {
+        diaries.value = RequestState.Loading
         viewModelScope.launch {
-            MongoRepositoryImpl.getAllDiaries().collectLatest { it ->
+            mongoRepository.getAllDiaries().debounce(2000).collectLatest { it ->
                 diaries.value = it
             }
         }

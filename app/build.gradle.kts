@@ -119,8 +119,11 @@ dependencies {
     // Message Bar Compose
     implementation("com.github.stevdza-san:MessageBarCompose:1.0.5")
 
-    // One-Tap Compose
-    implementation("com.github.stevdza-san:OneTapCompose:1.0.7")
+//    // One-Tap Compose
+//    implementation("com.github.stevdza-san:OneTapCompose:1.0.7")
+
+    implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.auth0.android:jwtdecode:2.0.2")
 
 
     // Desugar JDK

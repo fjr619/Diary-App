@@ -34,8 +34,8 @@ import com.fjr619.diary.presentation.screens.home.HomeViewModel
 import com.fjr619.diary.presentation.screens.write.WriteScreen
 import com.fjr619.diary.presentation.screens.write.WriteViewModel
 import com.fjr619.diary.util.Constants
+import com.fjr619.diary.util.onetap.rememberOneTapSignInState
 import com.stevdzasan.messagebar.rememberMessageBarState
-import com.stevdzasan.onetap.rememberOneTapSignInState
 import io.realm.kotlin.mongodb.App
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -57,7 +57,6 @@ fun SetupNavGraph(
                 navController.popBackStack()
                 navController.navigate(Screen.Home.route)
             },
-            onDataLoaded = onDataLoaded
         )
         homeRoute(
             navigateToWrite = { navController.navigate(Screen.Write.route) },
@@ -66,13 +65,11 @@ fun SetupNavGraph(
                 navController.popBackStack()
                 navController.navigate(Screen.Authentication.route)
             },
-            onDataLoaded = onDataLoaded
         )
         writeRoute(
             onBackPressed = {
                 navController.popBackStack()
             },
-            onDataLoaded = onDataLoaded
         )
     }
 
@@ -83,7 +80,6 @@ fun SetupNavGraph(
 
 fun NavGraphBuilder.authenticationRoute(
     navigateToHome: () -> Unit,
-    onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Authentication.route) {
         val viewModel: AuthenticationViewModel = hiltViewModel()
@@ -126,11 +122,10 @@ fun NavGraphBuilder.homeRoute(
     navigateToWrite: () -> Unit,
     navigateToWriteWithArgs: (String) -> Unit,
     navigateToAuth: () -> Unit,
-    onDataLoaded: () -> Unit
 ) {
     composable(route = Screen.Home.route) {
-        val viewModel: HomeViewModel = viewModel()
-        val diaries = viewModel.diaries
+        val viewModel: HomeViewModel = hiltViewModel()
+        val diaries by viewModel.diaries
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
         var signOutDialogOpened by rememberSaveable {
             mutableStateOf(false)
@@ -138,7 +133,7 @@ fun NavGraphBuilder.homeRoute(
         val scope = rememberCoroutineScope()
 
         HomeScreen(
-            diaries = diaries.value,
+            diaries = diaries,
             drawerState = drawerState,
             onMenuClicked = {
                 scope.launch {
@@ -146,9 +141,7 @@ fun NavGraphBuilder.homeRoute(
                 }
             },
             onDateSelected = {},
-            onSignoutClicked = {
-                signOutDialogOpened = true
-            },
+            onSignoutClicked = { signOutDialogOpened = true },
             navigateToWrite = navigateToWrite,
             navigateToWriteWithArgs = navigateToWriteWithArgs,
             onShowHideGallery = viewModel::updateOpenGallery
@@ -175,7 +168,6 @@ fun NavGraphBuilder.homeRoute(
 @OptIn(ExperimentalFoundationApi::class)
 fun NavGraphBuilder.writeRoute(
     onBackPressed: () -> Unit,
-    onDataLoaded: () -> Unit
 ) {
     composable(
         route = Screen.Write.route,
@@ -193,7 +185,7 @@ fun NavGraphBuilder.writeRoute(
     ) {
 
         val context = LocalContext.current
-        val viewModel: WriteViewModel = viewModel()
+        val viewModel: WriteViewModel = hiltViewModel()
         val uiState = viewModel.uiState
         val pagerState = rememberPagerState(
             initialPage = 0,
